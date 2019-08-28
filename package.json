@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "debug": "node --inspect-brk ./index.js"
+    "debug": "node --inspect-brk ./mu-create.js"
   },
   "repository": {
     "type": "git",
@@ -21,5 +21,9 @@
     "commander": "^3.0.0",
     "node-7z": "^1.1.1",
     "simple-git": "^1.124.0"
+  },
+  "bin": {
+    "mu-create": "./mu-create.js",
+    "mu-update": "./mu-update.js"
   }
 }
