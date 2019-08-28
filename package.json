@@ -1,7 +1,7 @@
 {
   "name": "modules_updater",
   "version": "1.0.0",
-  "description": "",
+  "description": "Scripts to make updating node modules more convenient.",
   "main": "index.js",
   "scripts": {
     "debug": "node --inspect-brk ./mu-create.js"
@@ -20,6 +20,7 @@
     "7zip-bin": "^4.0.2",
     "commander": "^3.0.0",
     "node-7z": "^1.1.1",
+    "ora": "^3.4.0",
     "simple-git": "^1.124.0"
   },
   "bin": {

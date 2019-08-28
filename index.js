@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const git = require('simple-git/promise');
 const { execSync } = require('child_process');
-const { filesExist, dirsExist } = require('./util/fs-util');
-const { add, extract } = require('./util/7z-util');
+const { filesExist, dirsExist } = require('./utils/fs-util');
+const { add, extract } = require('./utils/7z-util');
 
 const REQ_FILES = ['package.json', 'package-lock.json'];
 const NM_DIR = 'node_modules';
@@ -17,7 +17,6 @@ const create = async ({ repo, install, delete: deleteAfter, output }) => {
     //    await git().silent(true).clone(remote);
     //}
 
-    // check that the repo has all required files and directories
     if (!filesExist(...REQ_FILES)) {
         console.error('modules-updater ERR! repo does not have all of the required files:', ...REQ_FILES);
         process.exit(1);
@@ -28,17 +27,14 @@ const create = async ({ repo, install, delete: deleteAfter, output }) => {
         process.exit(1);
     }
 
-    // run npm install
     if (install) {
         execSync('npm install');
     }
 
-    // create NM_BACKUP.7z
     await add(NM_BACKUP, NM_DIR, { recursive: true });
 
     const outputZipName = `${dirName}_modules_${Date.now()}`;
 
-    // create update zip and delete NM_BACKUP.7z
     await add(outputZipName, [...REQ_FILES, `${NM_BACKUP}.7z`]);
     fs.unlinkSync(`${NM_BACKUP}.7z`);
 

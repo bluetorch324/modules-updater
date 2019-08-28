@@ -21,5 +21,5 @@ console.log('install:', program.install);
 try {
     muCreate(program);
 } catch (err) {
-    console.error(`modules-updater ERR! mu-create:`, err);
+    console.error(err);
 }

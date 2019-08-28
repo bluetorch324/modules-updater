@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const fileExists = async (filePath) => {
+const accessFile = (filePath) => {
     return new Promise((resolve, reject) => {
         fs.access(filePath, fs.F_OK, (err) => {
             if (err) {
@@ -12,17 +12,16 @@ const fileExists = async (filePath) => {
     });
 }
 
-filesExist = (...files) => {
-    files.forEach(async (file) => {
-        const exists = await fileExists(file);
-
-        if (!exists) return false;
-    });
-
-    return true;
+const filesExist = async (...files) => {
+    try {
+        await Promise.all(files.map((file) => accessFile(file)));
+        return true;
+    } catch (err) {
+        return false;
+    }
 }
 
-dirsExist = (...dirs) => {
+const dirsExist = (...dirs) => {
     dirs.forEach((dir) => {
         const exists = fs.existsSync(dir);
 
