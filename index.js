@@ -1,58 +1,30 @@
-const { add } = require('node-7z');
-const { path7za } = require('7zip-bin');
 const fs = require('fs');
+const path = require('path');
 const git = require('simple-git/promise');
 const { execSync } = require('child_process');
-const path = require('path');
+const { filesExist, dirsExist } = require('./util/fs-util');
+const { add, extract } = require('./util/7z-util');
 
-const files = ['package.json', 'package-lock.json'];
-
-const fileExists = async (filePath) => {
-    return new Promise((resolve, reject) => {
-        fs.access(filePath, fs.F_OK, (err) => {
-            if (err) {
-                console.error('modules-updater ERR! with fs', err);
-                return reject(err);
-            }
-
-            resolve(); // file exists
-        })
-    });
-}
-
-const validRepo = () => {
-    files.forEach(async (file) => {
-        const exists = await fileExists(file);
-
-        if (!exists) return false;
-    });
-
-    return fs.existsSync('node_modules');
-}
-
-const sevenAdd = (archive, source, options) => {
-    return new Promise((resolve, reject) => {
-        const stream = add(archive, source, {
-            ...options,
-            $bin: path7za
-        });
-
-        stream.on('end', () => resolve());
-        stream.on('error', (err) => reject(err));
-    });
-}
+const REQ_FILES = ['package.json', 'package-lock.json'];
+const NM_DIR = 'node_modules';
+const NM_BACKUP = 'node_modules_backup';
 
 const create = async ({ repo, install, delete: deleteAfter, output }) => {
     const dirPath = process.cwd();
     const dirName = path.basename(dirPath);
 
-    if (repo) {
-        await git().silent(true).clone(remote);
+    //if (repo) {
+    //    await git().silent(true).clone(remote);
+    //}
+
+    // check that the repo has all required files and directories
+    if (!filesExist(...REQ_FILES)) {
+        console.error('modules-updater ERR! repo does not have all of the required files:', ...REQ_FILES);
+        process.exit(1);
     }
 
-    // check that the repo has all required files/folders
-    if (!validRepo()) {
-        console.error('modules-updater ERR! repo does not have all of the required files:', ...files, 'or node_modules directory');
+    if (!dirsExist(NM_DIR) ) {
+        console.error('modules-updater ERR! repo does not have the required directory:', NM_DIR);
         process.exit(1);
     }
 
@@ -61,28 +33,32 @@ const create = async ({ repo, install, delete: deleteAfter, output }) => {
         execSync('npm install');
     }
 
-    // create node_modules_backup.7z
-    await sevenAdd('node_modules_backup', 'node_modules', {
-        recursive: true,
-    })
+    // create NM_BACKUP.7z
+    await add(NM_BACKUP, NM_DIR, { recursive: true });
 
     const outputZipName = `${dirName}_modules_${Date.now()}`;
 
-    await sevenAdd(outputZipName, [...files, 'node_modules_backup.7z']);
-    fs.unlinkSync('node_modules_backup.7z');
+    // create update zip and delete NM_BACKUP.7z
+    await add(outputZipName, [...REQ_FILES, `${NM_BACKUP}.7z`]);
+    fs.unlinkSync(`${NM_BACKUP}.7z`);
 
-    if (deleteAfter) {
-        fs.rmdirSync(dirPath);
-    }
+    //if (deleteAfter) {
+    //    fs.rmdirSync(dirPath);
+    //}
 
     if (output) {
-        fs.renameSync(outputZipName, `${output}/${outputZipName}`);
+        fs.renameSync(`${outputZipName}.7z`, `${output}/${outputZipName}.7z`);
     }
 }
 
-const update = () => {}
+const update = () => {
+    // If they exist delete: node_modules, NM_BACKUP.7z, package.json, package-lock.json
+
+    // need path to updater zip
+    // extract all files from zip
+}
 
 module.exports = {
-    create,
-    update
+    muCreate: create,
+    muUpdate: update
 };
