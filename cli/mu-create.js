@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 const program = require('commander');
-const { muCreate } = require('./');
+const { muCreate } = require('..');
 
 //.option('-r, --repo <url>', 'specify github repo to clone from')
 //.option('-d, --delete', 'delete project after zip')
 
 program
     .option('-o, --output <path>', 'specify output directory for modules zip')
-    .option('--no-install', 'run npm install on project before zip');
+    .option('-n, --no-install', 'run npm install on project before zip');
 
 program.parse(process.argv);
 

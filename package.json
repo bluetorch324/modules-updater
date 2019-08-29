@@ -1,7 +1,7 @@
 {
   "name": "modules_updater",
-  "version": "1.0.1",
-  "description": "Scripts to make updating node modules more convenient.",
+  "version": "1.0.2",
+  "description": "Scripts to make updating node modules offline more convenient.",
   "main": "index.js",
   "scripts": {
     "debug": "node --inspect-brk ./mu-create.js"
@@ -24,7 +24,8 @@
     "simple-git": "^1.124.0"
   },
   "bin": {
-    "mu-create": "./mu-create.js",
-    "mu-update": "./mu-update.js"
+    "mu-create": "./cli/mu-create.js",
+    "mu-update": "./cli/mu-update.js",
+    "mu-extract-backup": "./cli/mu-extract-backup.js"
   }
 }
