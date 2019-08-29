@@ -1,7 +1,7 @@
 const { add, extract } = require('node-7z');
 const { path7za } = require('7zip-bin');
 
-const resolveOptions = (options) => ({
+const resolveOptions = (options = {}) => ({
     ...options,
     $bin: path7za
 });

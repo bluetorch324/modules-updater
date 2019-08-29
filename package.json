@@ -1,6 +1,6 @@
 {
   "name": "modules_updater",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Scripts to make updating node modules more convenient.",
   "main": "index.js",
   "scripts": {

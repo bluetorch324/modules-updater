@@ -10,7 +10,7 @@ const NM_DIR = 'node_modules';
 const NM_BACKUP = 'node_modules_backup';
 
 const create = async ({ repo, install, delete: deleteAfter, output }) => {
-    const dirPath = process.cwd();
+    const dirPath =  process.cwd();
     const dirName = path.basename(dirPath);
 
     //if (repo) {
@@ -47,14 +47,34 @@ const create = async ({ repo, install, delete: deleteAfter, output }) => {
     }
 }
 
-const update = () => {
-    // If they exist delete: node_modules, NM_BACKUP.7z, package.json, package-lock.json
+const update = ({path}) => {
+    if (filesExist('package.json')) {
+        fs.unlinkSync('package.json');
+    }
 
-    // need path to updater zip
-    // extract all files from zip
+    if (filesExist('package-lock.json')) {
+        fs.unlinkSync('package-lock.json');
+    }
+
+    if (filesExist('node_modules_backup.7z')) {
+        fs.unlinkSync('node_modules_backup.7z');
+    }
+
+    if (dirsExist('node_modules')) {
+        fs.rmdirSync('node_modules');
+    }
+
+    extract(path, './');
+}
+
+const extractBackup = () => {
+    if (filesExist(`${NM_BACKUP}.7z`)) {
+        extract(`${NM_BACKUP}.7z`, './');
+    }
 }
 
 module.exports = {
     muCreate: create,
-    muUpdate: update
+    muUpdate: update,
+    muExtractBackup: extractBackup
 };
